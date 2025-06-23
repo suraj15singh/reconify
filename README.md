@@ -1,63 +1,85 @@
-# Reconify - HR Data Reconciliation Tool
+# User Access Management System
 
-A CLI tool for reconciling HR data with tool user access and generating structured PDF reports.
+A comprehensive web-based system for managing and reconciling user access across different platforms.
 
 ## Features
 
-- Compares HR data with tool access data
-- Identifies inactive users with active tool access
-- Generates detailed PDF reports for audit/compliance
-- Supports CSV input formats
-- Case-insensitive email matching
-- Detailed exception reporting
+- File upload and validation for HR and Panel data
+- Primary key selection (Email/Employee ID)
+- Reconciliation process management with unique Process IDs
+- Comprehensive audit trail
+- Report generation and filtering
+- Downloadable reports in PDF and CSV formats
 
-## Installation
+## Setup Instructions
 
-1. Clone this repository
-2. Install dependencies:
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/reconify.git
+cd reconify
+```
+
+2. Create a virtual environment (recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
-
+4. Run the Streamlit app:
 ```bash
-python reconify_pdf_recon.py \
-  --tool_path /path/to/tool.csv \
-  --hr_path /path/to/hr.csv \
-  --output_path /desired/folder \
-  --tool_name "Reconify Tool"
+streamlit run streamlit_app.py
 ```
 
-### Arguments
+## Usage
 
-- `--tool_path`: Path to the tool access CSV file
-- `--hr_path`: Path to the HR data CSV file
-- `--output_path`: Directory where the report will be saved
-- `--tool_name`: Name of the tool (defaults to "Reconify Tool")
-- `--output_format`: Output format (pdf or csv, defaults to pdf)
+1. **Upload Files**
+   - Upload HR data CSV file
+   - Upload Panel data CSV file
+   - Select primary key for mapping (Email or Employee ID)
 
-## Input File Requirements
+2. **Process Data**
+   - Click "Start Reconciliation" to begin the process
+   - A unique Process ID will be generated
+   - Validation results will be displayed
+   - Reconciliation report will be generated
+
+3. **View Reports**
+   - Access reports in the "Reports" tab
+   - Filter reports by Process ID, date range, reconciliation level, and employment status
+   - Download reports in PDF format
+
+4. **Audit Trail**
+   - View complete audit trail in the "Audit Trail" tab
+   - Download audit trail as CSV
+
+## File Format Requirements
 
 ### HR Data CSV
 Required columns:
 - Official Email Address
 - Employment Status
-- Employee Name (optional)
-- L1 Manager Code (optional)
-- HOD Code (optional)
+- Employee Name
 
-### Tool Data CSV
+### Panel Data CSV
 Required columns:
 - user_email
 - role_name
 - user_status
 - created_at
 
-## Output
+## Contributing
 
-Generates a PDF report containing:
-- Reconciliation summary
-- Detailed exception list
-- User status comparison
-- Audit trail information 
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 

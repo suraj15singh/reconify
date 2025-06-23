@@ -1,0 +1,507 @@
+{
+  "SellerPanel": {
+    "name": "Seller Panel",
+    "description": "Seller Panel",
+    "SOT": {
+      "HR_Data": {
+        "Official Email Address": "user_email"
+      }
+    }
+  },
+  "BOSS_Panel": {
+    "name": "BOSS Panel",
+    "description": "BOSS Panel Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "EMAIL"
+      }
+    }
+  },
+  "Procure_Tool": {
+    "name": "Procure Tool",
+    "description": "Procurement Tool Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "EMAILID"
+      }
+    }
+  },
+  "SAP": {
+    "name": "SAP",
+    "description": "SAP System Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Onboarding_Engine": {
+    "name": "Onboarding Engine",
+    "description": "OE Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "Plan_Master": {
+    "name": "Plan Master Management System",
+    "description": "Plan Master System Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "OE_Lending": {
+    "name": "OE Lending",
+    "description": "OE Lending Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "Ad_Tools": {
+    "name": "Ad Tools",
+    "description": "Advertising Tools Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "Email_id"
+      }
+    }
+  },
+  "Subscription": {
+    "name": "Subscription",
+    "description": "Subscription Management System",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "DWH_Ingest_UI": {
+    "name": "DWH Ingest UI",
+    "description": "Data Warehouse Ingest UI Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "User IDs"
+      }
+    }
+  },
+  "DWH_Starburst": {
+    "name": "DWH Starburst",
+    "description": "Data Warehouse Starburst Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "users"
+      }
+    }
+  },
+  "Recharge_Admin": {
+    "name": "Recharge Admin",
+    "description": "Recharge Administration System",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "UMP": {
+    "name": "UMP",
+    "description": "User Management Portal",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "userid"
+      }
+    }
+  },
+  "Salesforce_Payments": {
+    "name": "Salesforce - Payments",
+    "description": "Salesforce Payments Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "Salesforce_CST": {
+    "name": "Salesforce - CST, Helpdesk",
+    "description": "Salesforce Customer Support Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email"
+      }
+    }
+  },
+  "Freshdesk_OCL": {
+    "name": "Freshdesk - OCL",
+    "description": "Freshdesk OCL Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "Email"
+      }
+    }
+  },
+  "Freshdesk_FG": {
+    "name": "Freshdesk - FG",
+    "description": "Freshdesk FG Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "Email"
+      }
+    }
+  },
+  "Freshdesk_Merchant": {
+    "name": "Freshdesk - Merchant",
+    "description": "Freshdesk Merchant Support Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "Email"
+      }
+    }
+  },
+  "OAuth_Panel": {
+    "name": "OAuth Panel",
+    "description": "OAuth Management Panel",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "EmailID"
+      }
+    }
+  },
+  "JIRA": {
+    "name": "JIRA",
+    "description": "JIRA Project Management Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "email_address"
+      }
+    }
+  },
+  "BitBucket": {
+    "name": "BitBucket",
+    "description": "BitBucket Repository Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "Email address"
+      }
+    }
+  },
+  "Wiki_Confluence": {
+    "name": "Wiki/Confluence",
+    "description": "Documentation Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "e-mail address"
+      }
+    }
+  },
+  "Jenkins": {
+    "name": "Jenkins",
+    "description": "Jenkins CI/CD Access (PG, DWH, OE, Subscription)",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Lending_FreeIPA": {
+    "name": "Lending - FreeIPA",
+    "description": "Lending FreeIPA Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "PG_User_Mgmt": {
+    "name": "PG User Management Tool",
+    "description": "Payment Gateway User Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Genesis": {
+    "name": "Genesis",
+    "description": "Genesis Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "PeopleStrong": {
+    "name": "PeopleStrong",
+    "description": "Payroll System Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Lever": {
+    "name": "Lever",
+    "description": "Lever Recruitment Platform",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Facebook_OCL": {
+    "name": "Facebook - OCL",
+    "description": "Facebook OCL Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Facebook_PFG": {
+    "name": "Facebook - PFG",
+    "description": "Facebook PFG Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Sprinklr": {
+    "name": "Sprinklr",
+    "description": "Sprinklr Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Sendbird": {
+    "name": "Sendbird",
+    "description": "Sendbird Communication Platform",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Jocata": {
+    "name": "Jocata",
+    "description": "Jocata Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Looker": {
+    "name": "Looker",
+    "description": "Looker Analytics Platform",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Netcore": {
+    "name": "Netcore",
+    "description": "Netcore Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Clevertap": {
+    "name": "Clevertap",
+    "description": "Clevertap Analytics Platform",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "TestFlight": {
+    "name": "TestFlight",
+    "description": "iOS TestFlight Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Firebase": {
+    "name": "Firebase",
+    "description": "Firebase Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Google_Play": {
+    "name": "Android/Google Play Console",
+    "description": "Google Play Console Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Google_Analytics": {
+    "name": "Google Analytics",
+    "description": "Google Analytics Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "IOS_Paytm": {
+    "name": "iOS - Paytm",
+    "description": "iOS Paytm App Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "IOS_OCL": {
+    "name": "iOS - OCL",
+    "description": "iOS OCL App Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Adobe": {
+    "name": "Adobe",
+    "description": "Adobe Creative Suite Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "O365": {
+    "name": "Office 365",
+    "description": "Microsoft Office 365 Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Slack": {
+    "name": "Slack",
+    "description": "Slack Workspace Access (Paytm, Creditmate, Paytmmloyal/mobiquest)",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "VPN_Forticlient": {
+    "name": "VPN - Forticlient",
+    "description": "Forticlient VPN Access - OCL",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "VPN_Zscaler": {
+    "name": "VPN - Zscaler",
+    "description": "Zscaler VPN Access - OCL",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "GSuite": {
+    "name": "G-Suite",
+    "description": "Google Workspace Access (Paytm, Paytminsurance, Paytmgic, Creditmate, Mobiquest, Paipai, NearBuy)",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Active_Directory": {
+    "name": "Active Directory",
+    "description": "AD Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Creditmate_App": {
+    "name": "Creditmate Application",
+    "description": "Creditmate Platform Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Freshdesk_PaiPai": {
+    "name": "Freshdesk - Pai Pai",
+    "description": "Freshdesk Pai Pai Access",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Keycloak_Travel": {
+    "name": "Keycloak - Travel",
+    "description": "Keycloak Travel Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "ArgoCD_Travel": {
+    "name": "ArgoCD - Travel",
+    "description": "ArgoCD Travel Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "CIF_Panel": {
+    "name": "CIF Panel",
+    "description": "Customer Information File Panel",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "IDAM_OneLogin": {
+    "name": "IDAM - OneLogin Portal",
+    "description": "OneLogin Identity Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  },
+  "Granter_Panel": {
+    "name": "Granter Panel",
+    "description": "Granter Panel Access Management",
+    "SOT": {
+      "HR_Data": {
+        "Official_Email_Address": "user_email"
+      }
+    }
+  }
+}
+  
