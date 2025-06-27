@@ -438,7 +438,7 @@ def main():
             summary_df.set_index('S.No.', inplace=True)
             
             # Add filter and export options above the table
-            col1, col2, col3 = st.columns([2, 1, 1])
+            col1, col2 = st.columns([2, 1])
             with col1:
                 st.subheader("Reconciliation Summary")
             with col2:
@@ -455,25 +455,6 @@ def main():
                 elif filter_type == "Month":
                     selected_month = st.date_input("Select Month", datetime.now())
                     filter_date = selected_month.strftime('%m-%Y')
-            with col3:
-                # Export options
-                export_format = st.selectbox(
-                    "Export as",
-                    ["View", "Download CSV", "Download PDF"],
-                    key="export_format"
-                )
-                
-                if export_format == "Download CSV":
-                    csv = summary_df.to_csv(index=True)
-                    st.download_button(
-                        label="Download CSV",
-                        data=csv,
-                        file_name=f"reconciliation_summary_{recon_id}.csv",
-                        mime="text/csv"
-                    )
-                elif export_format == "Download PDF":
-                    # TODO: Implement PDF export
-                    st.info("PDF export coming soon!")
             
             # Display the summary table
             st.dataframe(summary_df)
@@ -515,7 +496,7 @@ def main():
                 summary_df.set_index('S.No.', inplace=True)
                 
                 # Add filter and export options
-                col1, col2, col3 = st.columns([2, 1, 1])
+                col1, col2 = st.columns([2, 1])
                 with col1:
                     st.write("**Reconciliation Summary**")
                 with col2:
@@ -524,23 +505,12 @@ def main():
                         ["All", "Date", "Month"],
                         key="overall_filter_type"
                     )
-                with col3:
-                    export_format = st.selectbox(
-                        "Export as",
-                        ["View", "Download CSV", "Download PDF"],
-                        key="overall_export_format"
-                    )
-                    
-                    if export_format == "Download CSV":
-                        csv = summary_df.to_csv(index=True)
-                        st.download_button(
-                            label="Download CSV",
-                            data=csv,
-                            file_name=f"overall_reconciliation_summary_{recon_id}.csv",
-                            mime="text/csv"
-                        )
-                    elif export_format == "Download PDF":
-                        st.info("PDF export coming soon!")
+                    if filter_type == "Date":
+                        selected_date = st.date_input("Select Date", datetime.now())
+                        filter_date = selected_date.strftime('%d-%m-%Y')
+                    elif filter_type == "Month":
+                        selected_month = st.date_input("Select Month", datetime.now())
+                        filter_date = selected_month.strftime('%m-%Y')
                 
                 # Display the summary table
                 st.dataframe(summary_df)
@@ -594,7 +564,7 @@ def main():
             panel_summary_df.index.name = 'S.No.'
             
             # Add filter and export options
-            col1, col2, col3 = st.columns([2, 1, 1])
+            col1, col2 = st.columns([2, 1])
             with col1:
                 st.write("**Panel Wise Summary**")
             with col2:
@@ -603,23 +573,6 @@ def main():
                     ["All Panels"] + list(panel_summary_df['Panel Name'].unique()),
                     key="panel_filter"
                 )
-            with col3:
-                panel_export = st.selectbox(
-                    "Export as",
-                    ["View", "Download CSV", "Download PDF"],
-                    key="panel_export_format"
-                )
-                
-                if panel_export == "Download CSV":
-                    csv = panel_summary_df.to_csv(index=True)
-                    st.download_button(
-                        label="Download CSV",
-                        data=csv,
-                        file_name=f"panel_wise_reconciliation_summary_{datetime.now().strftime('%d%m%Y')}.csv",
-                        mime="text/csv"
-                    )
-                elif panel_export == "Download PDF":
-                    st.info("PDF export coming soon!")
             
             # Display filtered data
             if panel_filter != "All Panels":
@@ -669,7 +622,7 @@ def main():
             detailed_df.index.name = 'S.No.'
             
             # Add filter and export options
-            col1, col2, col3 = st.columns([2, 1, 1])
+            col1, col2 = st.columns([2, 1])
             with col1:
                 st.write("**Detailed Report**")
             with col2:
@@ -678,23 +631,6 @@ def main():
                     ["All Panels"] + list(detailed_df['Panel Name'].unique()),
                     key="detail_filter"
                 )
-            with col3:
-                detail_export = st.selectbox(
-                    "Export as",
-                    ["View", "Download CSV", "Download PDF"],
-                    key="detail_export_format"
-                )
-                
-                if detail_export == "Download CSV":
-                    csv = detailed_df.to_csv(index=True)
-                    st.download_button(
-                        label="Download CSV",
-                        data=csv,
-                        file_name=f"individual_panel_detailed_report_{datetime.now().strftime('%d%m%Y')}.csv",
-                        mime="text/csv"
-                    )
-                elif detail_export == "Download PDF":
-                    st.info("PDF export coming soon!")
             
             # Display filtered data
             if detail_filter != "All Panels":
@@ -741,7 +677,7 @@ def main():
             user_summary_df.index.name = 'S.No.'
             
             # Add filter, search, and export options
-            col1, col2, col3 = st.columns([2, 1, 1])
+            col1, col2 = st.columns([2, 1])
             with col1:
                 st.write("**User Summary**")
                 # User search input
@@ -752,23 +688,6 @@ def main():
                     ["All Changes", "No Change", "Active → Inactive", "Inactive → Active"],
                     key="user_filter"
                 )
-            with col3:
-                user_export = st.selectbox(
-                    "Export as",
-                    ["View", "Download CSV", "Download PDF"],
-                    key="user_export_format"
-                )
-                
-                if user_export == "Download CSV":
-                    csv = user_summary_df.to_csv(index=True)
-                    st.download_button(
-                        label="Download CSV",
-                        data=csv,
-                        file_name=f"user_wise_summary_{datetime.now().strftime('%d%m%Y')}.csv",
-                        mime="text/csv"
-                    )
-                elif user_export == "Download PDF":
-                    st.info("PDF export coming soon!")
             
             # Apply search and filter
             filtered_user_df = user_summary_df
