@@ -437,29 +437,33 @@ def main():
             summary_df = pd.DataFrame(summary_data)
             summary_df.set_index('S.No.', inplace=True)
             
-            # Add filter and export options above the table
+            # Add filter and download button
             col1, col2 = st.columns([2, 1])
             with col1:
-                st.subheader("Reconciliation Summary")
-            with col2:
-                # Filter options
+                st.write("**Reconciliation Summary**")
                 filter_type = st.selectbox(
                     "Filter by",
                     ["All", "Date", "Month"],
-                    key="filter_type"
+                    key="overall_filter_type_tab2"
                 )
-                
                 if filter_type == "Date":
                     selected_date = st.date_input("Select Date", datetime.now())
                     filter_date = selected_date.strftime('%d-%m-%Y')
                 elif filter_type == "Month":
                     selected_month = st.date_input("Select Month", datetime.now())
                     filter_date = selected_month.strftime('%m-%Y')
+            with col2:
+                st.markdown('<span style="color: green; font-weight: bold;">Download Report</span>', unsafe_allow_html=True)
+                st.download_button(
+                    label="Download CSV",
+                    data=summary_df.to_csv(index=True),
+                    file_name=f"reconciliation_summary_{recon_id}.csv",
+                    mime="text/csv",
+                    key=f"download_overall_results_{recon_id}"
+                )
             
             # Display the summary table
             st.dataframe(summary_df)
-            
-            # Add disclaimer
             st.info("Disclaimer: Only active users considered for Reconciliation activity")
             
             # Store the reconciliation ID in session state
@@ -495,11 +499,10 @@ def main():
                 summary_df = pd.DataFrame([summary_data])
                 summary_df.set_index('S.No.', inplace=True)
                 
-                # Add filter and export options
+                # Add filter and download button
                 col1, col2 = st.columns([2, 1])
                 with col1:
                     st.write("**Reconciliation Summary**")
-                with col2:
                     filter_type = st.selectbox(
                         "Filter by",
                         ["All", "Date", "Month"],
@@ -511,6 +514,15 @@ def main():
                     elif filter_type == "Month":
                         selected_month = st.date_input("Select Month", datetime.now())
                         filter_date = selected_month.strftime('%m-%Y')
+                with col2:
+                    st.markdown('<span style="color: green; font-weight: bold;">Download Report</span>', unsafe_allow_html=True)
+                    st.download_button(
+                        label="Download CSV",
+                        data=summary_df.to_csv(index=True),
+                        file_name=f"overall_reconciliation_summary_{recon_id}.csv",
+                        mime="text/csv",
+                        key=f"download_overall_reports_{recon_id}"
+                    )
                 
                 # Display the summary table
                 st.dataframe(summary_df)
@@ -521,7 +533,6 @@ def main():
         with report_tab2:
             st.subheader("PANEL WISE RECONCILIATION SUMMARY")
             
-            # Sample data for panel wise reconciliation summary
             from report_formats import PanelWiseReconciliationSummary
             
             panel_summary_data = [
@@ -563,18 +574,24 @@ def main():
             panel_summary_df.index = range(1, len(panel_summary_df) + 1)
             panel_summary_df.index.name = 'S.No.'
             
-            # Add filter and export options
             col1, col2 = st.columns([2, 1])
             with col1:
                 st.write("**Panel Wise Summary**")
-            with col2:
                 panel_filter = st.selectbox(
                     "Filter by Panel",
                     ["All Panels"] + list(panel_summary_df['Panel Name'].unique()),
                     key="panel_filter"
                 )
+            with col2:
+                st.markdown('<span style="color: green; font-weight: bold;">Download Report</span>', unsafe_allow_html=True)
+                st.download_button(
+                    label="Download CSV",
+                    data=panel_summary_df.to_csv(index=True),
+                    file_name=f"panel_wise_reconciliation_summary_{datetime.now().strftime('%d%m%Y')}.csv",
+                    mime="text/csv",
+                    key=f"download_panel_reports_{datetime.now().strftime('%d%m%Y%H%M%S')}"
+                )
             
-            # Display filtered data
             if panel_filter != "All Panels":
                 filtered_df = panel_summary_df[panel_summary_df['Panel Name'] == panel_filter]
                 st.dataframe(filtered_df)
@@ -584,7 +601,6 @@ def main():
         with report_tab3:
             st.subheader("INDIVIDUAL PANEL WISE DETAILED REPORT")
             
-            # Sample data for individual panel wise detailed report
             from report_formats import IndividualPanelWiseDetailedReport
             
             detailed_data = [
@@ -621,18 +637,24 @@ def main():
             detailed_df.index = range(1, len(detailed_df) + 1)
             detailed_df.index.name = 'S.No.'
             
-            # Add filter and export options
             col1, col2 = st.columns([2, 1])
             with col1:
                 st.write("**Detailed Report**")
-            with col2:
                 detail_filter = st.selectbox(
                     "Filter by Panel",
                     ["All Panels"] + list(detailed_df['Panel Name'].unique()),
                     key="detail_filter"
                 )
+            with col2:
+                st.markdown('<span style="color: green; font-weight: bold;">Download Report</span>', unsafe_allow_html=True)
+                st.download_button(
+                    label="Download CSV",
+                    data=detailed_df.to_csv(index=True),
+                    file_name=f"individual_panel_detailed_report_{datetime.now().strftime('%d%m%Y')}.csv",
+                    mime="text/csv",
+                    key=f"download_detail_reports_{datetime.now().strftime('%d%m%Y%H%M%S')}"
+                )
             
-            # Display filtered data
             if detail_filter != "All Panels":
                 filtered_detail_df = detailed_df[detailed_df['Panel Name'] == detail_filter]
                 st.dataframe(filtered_detail_df)
@@ -642,7 +664,6 @@ def main():
         with report_tab4:
             st.subheader("USER-WISE SUMMARY")
             
-            # Sample data for user-wise summary
             from report_formats import UserWiseSummary
             
             user_summary_data = [
@@ -676,20 +697,25 @@ def main():
             user_summary_df.index = range(1, len(user_summary_df) + 1)
             user_summary_df.index.name = 'S.No.'
             
-            # Add filter, search, and export options
             col1, col2 = st.columns([2, 1])
             with col1:
                 st.write("**User Summary**")
-                # User search input
                 user_search = st.text_input("Search by User Email", "", key="user_search")
-            with col2:
                 user_filter = st.selectbox(
                     "Filter by Status Change",
                     ["All Changes", "No Change", "Active → Inactive", "Inactive → Active"],
                     key="user_filter"
                 )
+            with col2:
+                st.markdown('<span style="color: green; font-weight: bold;">Download Report</span>', unsafe_allow_html=True)
+                st.download_button(
+                    label="Download CSV",
+                    data=user_summary_df.to_csv(index=True),
+                    file_name=f"user_wise_summary_{datetime.now().strftime('%d%m%Y')}.csv",
+                    mime="text/csv",
+                    key=f"download_user_reports_{datetime.now().strftime('%d%m%Y%H%M%S')}"
+                )
             
-            # Apply search and filter
             filtered_user_df = user_summary_df
             if user_search:
                 filtered_user_df = filtered_user_df[filtered_user_df['User Email ID'].str.contains(user_search, case=False, na=False)]
