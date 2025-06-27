@@ -69,7 +69,7 @@ def main():
     if 'reconciliation_results' not in st.session_state:
         st.session_state.reconciliation_results = None
     if 'current_tab' not in st.session_state:
-        st.session_state.current_tab = "Primary Data Upload"
+        st.session_state.current_tab = "HR and App Data"
     if 'primary_upload_complete' not in st.session_state:
         st.session_state.primary_upload_complete = False
     if 'selected_app' not in st.session_state:
@@ -81,8 +81,8 @@ def main():
 
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
-        "Primary Data Upload", 
-        "Secondary Data Upload", 
+        "HR and App Data", 
+        "Supplementary Info", 
         "Data Mapping", 
         "Reconciliation Results", 
         "Reports",
@@ -91,7 +91,7 @@ def main():
     ])
 
     with tab1:
-        st.header("Primary Data Upload")
+        st.header("HR and App Data")
         
         # Application Data Upload
         st.subheader("Application Data Upload")
@@ -119,39 +119,78 @@ def main():
                     st.write(f"HR Data: {source} → Application Data: {target}")
         
         app_file = st.file_uploader("Upload Application Data (CSV/Excel)", type=['csv', 'xlsx'])
-        if app_file:
-            try:
-                app_df = pd.read_csv(app_file) if app_file.name.endswith('.csv') else pd.read_excel(app_file)
+        
+        # Logic to handle new file upload and reset state
+        if app_file and (st.session_state.get('app_file_name') != app_file.name):
+            st.session_state.app_file_name = app_file.name
+            # Reset states for new file
+            for key in ['raw_app_data', 'app_data', 'selected_columns']:
+                if key in st.session_state:
+                    del st.session_state[key]
+
+        # If file is present but not processed
+        if app_file and 'app_data' not in st.session_state:
+            # Load data if not already in session state
+            if 'raw_app_data' not in st.session_state:
+                try:
+                    if app_file.name.endswith('.csv'):
+                        st.session_state.raw_app_data = pd.read_csv(app_file)
+                    else:
+                        # For Excel files, explicitly read only the first sheet (sheet_name=0)
+                        st.session_state.raw_app_data = pd.read_excel(app_file, sheet_name=0)
+                except Exception as e:
+                    st.error(f"Error loading Application data: {str(e)}")
+                    st.stop()
+
+            st.subheader("Select columns to ingest")
+            with st.form(key='column_selection_form'):
+                all_columns = st.session_state.raw_app_data.columns.tolist()
                 
-                # Verify required fields exist
-                if selected_app and 'SOT' in config_handler.get_app_config(selected_app):
-                    required_field = config_handler.get_app_config(selected_app)['SOT']['HR_Data']['Official Email Address']
-                    if required_field not in app_df.columns:
-                        st.error(f"Required field '{required_field}' not found in the uploaded file.")
-                        st.stop()
+                selected_columns = st.multiselect(
+                    "Select the columns you want to ingest from the uploaded file:",
+                    options=all_columns,
+                    default=all_columns
+                )
                 
-                # Reset index to start from 1 and rename it to S.No.
-                app_df.index = range(1, len(app_df) + 1)
-                app_df.index.name = 'S.No.'
-                # Remove commas from L1 manager code if it exists
-                if 'L1 Manager Code' in app_df.columns:
-                    app_df['L1 Manager Code'] = app_df['L1 Manager Code'].astype(str).str.replace(',', '')
-                st.success(f"Successfully loaded Application data with {len(app_df)} records")
-                st.session_state.app_data = app_df
-                # Display first few rows of Application data
-                st.write("Preview of Application Data:")
-                st.dataframe(app_df)
-                
-                # Add to upload history
-                st.session_state.upload_history.append({
-                    'timestamp': datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
-                    'file_type': 'Application Data',
-                    'file_name': app_file.name,
-                    'records': len(app_df),
-                    'application': available_apps[selected_app]
-                })
-            except Exception as e:
-                st.error(f"Error loading Application data: {str(e)}")
+                submitted = st.form_submit_button("Ingest Selected Columns")
+                if submitted:
+                    st.session_state.selected_columns = selected_columns
+                    
+                    try:
+                        app_df = st.session_state.raw_app_data[st.session_state.selected_columns].copy()
+                        
+                        # Verify required fields exist
+                        if selected_app and 'SOT' in config_handler.get_app_config(selected_app):
+                            required_field = config_handler.get_app_config(selected_app)['SOT']['HR_Data']['Official Email Address']
+                            if required_field not in app_df.columns:
+                                st.error(f"Required field '{required_field}' not found in the selected columns. Please make sure it is selected and press 'Ingest' again.")
+                                st.stop()
+                        
+                        # ----- SUCCESSFUL INGESTION -----
+                        app_df.index = range(1, len(app_df) + 1)
+                        app_df.index.name = 'S.No.'
+                        if 'L1 Manager Code' in app_df.columns:
+                            app_df['L1 Manager Code'] = app_df['L1 Manager Code'].astype(str).str.replace(',', '')
+                        
+                        st.session_state.app_data = app_df
+                        
+                        st.session_state.upload_history.append({
+                            'timestamp': datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
+                            'file_type': 'Application Data',
+                            'file_name': app_file.name,
+                            'records': len(app_df),
+                            'application': available_apps[selected_app]
+                        })
+                        st.experimental_rerun()
+
+                    except Exception as e:
+                        st.error(f"Error processing Application data: {str(e)}")
+
+        # If data is ingested, show it
+        if 'app_data' in st.session_state:
+            st.success(f"Successfully loaded Application data with {len(st.session_state.app_data)} records")
+            st.write("Preview of Application Data:")
+            st.dataframe(st.session_state.app_data)
 
         # HR Data Loading from fixed path
         st.subheader("HR Data")
@@ -220,18 +259,18 @@ def main():
                     st.session_state.primary_upload_complete = True
                     st.success("Reconciliation completed successfully!")
                     
-                    # Switch to Secondary Data Upload tab
-                    st.session_state.current_tab = "Secondary Data Upload"
+                    # Switch to Supplementary Info tab
+                    st.session_state.current_tab = "Supplementary Info"
                     st.experimental_rerun()
                 except Exception as e:
                     st.error(f"Error during reconciliation: {str(e)}")
 
     with tab2:
-        st.header("Secondary Data Upload")
+        st.header("Supplementary Info")
         
         # Check if primary upload is complete
         if not st.session_state.primary_upload_complete:
-            st.warning("Please complete the Primary Data Upload first.")
+            st.warning("Please complete the HR and App Data upload first.")
             st.stop()
         
         # Additional Data Upload
@@ -241,7 +280,11 @@ def main():
             st.session_state.additional_data = {}
             for file in additional_files:
                 try:
-                    df = pd.read_csv(file) if file.name.endswith('.csv') else pd.read_excel(file)
+                    if file.name.endswith('.csv'):
+                        df = pd.read_csv(file)
+                    else:
+                        # For Excel files, explicitly read only the first sheet (sheet_name=0)
+                        df = pd.read_excel(file, sheet_name=0)
                     # Reset index to start from 1 and rename it to S.No.
                     df.index = range(1, len(df) + 1)
                     df.index.name = 'S.No.'
@@ -303,7 +346,29 @@ def main():
     with tab3:
         st.header("Data Mapping")
         
-        if 'hr_data' in st.session_state and 'app_data' in st.session_state:
+        # App selection dropdown at the top of Data Mapping
+        config_handler = ConfigHandler()
+        available_apps = config_handler.get_all_apps_with_names()
+        # Pre-select from session if available
+        default_app = st.session_state.get('selected_app') if st.session_state.get('selected_app') in available_apps else None
+        selected_mapping_app = st.selectbox(
+            "Select Application for Mapping",
+            options=list(available_apps.keys()),
+            format_func=lambda x: available_apps[x],
+            index=list(available_apps.keys()).index(default_app) if default_app else 0,
+            key="mapping_app_selectbox"
+        )
+        if selected_mapping_app:
+            st.session_state.selected_app = selected_mapping_app
+            st.info(f"Selected Application for Mapping: {available_apps[selected_mapping_app]}")
+            st.write(f"Description: {config_handler.get_app_description(selected_mapping_app)}")
+        
+        # Only show mapping interface for the selected app
+        if (
+            'hr_data' in st.session_state and 
+            'app_data' in st.session_state and 
+            st.session_state.selected_app == selected_mapping_app
+        ):
             # Field Mapping Interface
             st.subheader("Configure Field Mappings")
             
@@ -424,81 +489,299 @@ def main():
     with tab5:
         st.header("Reports")
         
-        # Create two columns for the tables
-        col1, col2 = st.columns(2)
+        # Create tabs for the 4 different reports
+        report_tab1, report_tab2, report_tab3, report_tab4 = st.tabs([
+            "Overall Reconciliation Status Summary",
+            "Panel Wise Reconciliation Summary", 
+            "Individual Panel Wise Detailed Report",
+            "User-Wise Summary"
+        ])
         
-        with col1:
-            st.subheader("PANEL LEVEL REPORT - FOR IT / AUDIT TEAM")
+        with report_tab1:
+            st.subheader("OVERALL RECONCILIATION STATUS SUMMARY")
             
-            # Sample data for panel level report
-            panel_data = {
-                'Panel Name': ['Seller Panel', 'BOSS Panel'],
-                'Total Users': [100, 150],
-                'Reconciliation ID': ['RCN_SP_001', 'RCN_BP_001'],
-                'Reconciliation Date': ['15-03-2024', '15-03-2024'],
-                'Active': [80, 120],
-                'Inactive': [15, 20],
-                'Others (Not Found)': [5, 10],
-                'Service IDs': [0, 0],
-                'Third Party Users': [10, 15],
-                'Group Entity': [5, 8],
-                'Vendor / Auditor / Consultant': [3, 5],
-                'Entity Movement': [2, 3],
-                'Incorrect Email ID': [1, 2],
-                'Dual Accounts': [0, 1],
-                'Others': [2, 3]
-            }
-            
-            panel_df = pd.DataFrame(panel_data)
-            # Reset index to start from 1 and rename it to S.No.
-            panel_df.index = range(1, len(panel_df) + 1)
-            panel_df.index.name = 'S.No.'
-            
-            # Display the panel level report
-            st.dataframe(panel_df)
-            
-            # Add download button for each row
-            for idx, row in panel_df.iterrows():
-                if st.button(f"Download CSV - {row['Panel Name']}", key=f"panel_download_{idx}"):
-                    csv = pd.DataFrame([row]).to_csv(index=False)
-                    st.download_button(
-                        label=f"Download {row['Panel Name']} Report",
-                        data=csv,
-                        file_name=f"panel_report_{row['Panel Name'].replace(' ', '_')}_{row['Reconciliation ID']}.csv",
-                        mime="text/csv",
-                        key=f"panel_download_btn_{idx}"
-                    )
-        
-        with col2:
-            st.subheader("USER LEVEL REPORT - FOR IT / AUDIT TEAM")
-            
-            # Sample data for user level report
-            user_data = {
-                'User Email ID': ['user1@example.com', 'user2@example.com', 'user3@example.com'],
-                'Panel Name': ['Seller Panel', 'BOSS Panel', 'Seller Panel'],
-                'Pre Recon Status': ['Active', 'Inactive', 'Active'],
-                'Date of Reconciliation': ['15-03-2024', '15-03-2024', '15-03-2024'],
-                'Post Recon Status': ['Active', 'Inactive', 'Inactive']
-            }
-            
-            user_df = pd.DataFrame(user_data)
-            # Reset index to start from 1 and rename it to S.No.
-            user_df.index = range(1, len(user_df) + 1)
-            user_df.index.name = 'S.No.'
-            
-            # Display the user level report
-            st.dataframe(user_df)
-            
-            # Add download button for the entire user level report
-            if st.button("Download User Level Report", key="user_download"):
-                csv = user_df.to_csv(index=True)
-                st.download_button(
-                    label="Download User Level Report",
-                    data=csv,
-                    file_name=f"user_level_report_{datetime.now().strftime('%d%m%Y')}.csv",
-                    mime="text/csv",
-                    key="user_download_btn"
+            if st.session_state.reconciliation_results is not None:
+                # Generate reconciliation ID
+                recon_id = generate_reconciliation_id(st.session_state.selected_app)
+                
+                # Create summary data using the new format
+                from report_formats import OverallReconciliationStatusSummary
+                summary_data = OverallReconciliationStatusSummary.get_summary_row(
+                    panel_name=config_handler.get_app_name(st.session_state.selected_app),
+                    recon_id=recon_id
                 )
+                
+                summary_df = pd.DataFrame([summary_data])
+                summary_df.set_index('S.No.', inplace=True)
+                
+                # Add filter and export options
+                col1, col2, col3 = st.columns([2, 1, 1])
+                with col1:
+                    st.write("**Reconciliation Summary**")
+                with col2:
+                    filter_type = st.selectbox(
+                        "Filter by",
+                        ["All", "Date", "Month"],
+                        key="overall_filter_type"
+                    )
+                with col3:
+                    export_format = st.selectbox(
+                        "Export as",
+                        ["View", "Download CSV", "Download PDF"],
+                        key="overall_export_format"
+                    )
+                    
+                    if export_format == "Download CSV":
+                        csv = summary_df.to_csv(index=True)
+                        st.download_button(
+                            label="Download CSV",
+                            data=csv,
+                            file_name=f"overall_reconciliation_summary_{recon_id}.csv",
+                            mime="text/csv"
+                        )
+                    elif export_format == "Download PDF":
+                        st.info("PDF export coming soon!")
+                
+                # Display the summary table
+                st.dataframe(summary_df)
+                st.info("Disclaimer: Only active users considered for Reconciliation activity")
+            else:
+                st.info("No reconciliation results available. Please complete the reconciliation process first.")
+        
+        with report_tab2:
+            st.subheader("PANEL WISE RECONCILIATION SUMMARY")
+            
+            # Sample data for panel wise reconciliation summary
+            from report_formats import PanelWiseReconciliationSummary
+            
+            panel_summary_data = [
+                PanelWiseReconciliationSummary.get_panel_summary_row(
+                    panel_name="Seller Panel",
+                    total_users=100,
+                    recon_id="RCN_SP_001",
+                    active_count=80,
+                    inactive_count=15,
+                    not_found_count=5,
+                    service_ids=0,
+                    third_party_users=10,
+                    group_entity=5,
+                    vendor_auditor_consultant=3,
+                    entity_movement=2,
+                    incorrect_email=1,
+                    dual_accounts=0,
+                    others=2
+                ),
+                PanelWiseReconciliationSummary.get_panel_summary_row(
+                    panel_name="BOSS Panel",
+                    total_users=150,
+                    recon_id="RCN_BP_001",
+                    active_count=120,
+                    inactive_count=20,
+                    not_found_count=10,
+                    service_ids=0,
+                    third_party_users=15,
+                    group_entity=8,
+                    vendor_auditor_consultant=5,
+                    entity_movement=3,
+                    incorrect_email=2,
+                    dual_accounts=1,
+                    others=3
+                )
+            ]
+            
+            panel_summary_df = pd.DataFrame(panel_summary_data)
+            panel_summary_df.index = range(1, len(panel_summary_df) + 1)
+            panel_summary_df.index.name = 'S.No.'
+            
+            # Add filter and export options
+            col1, col2, col3 = st.columns([2, 1, 1])
+            with col1:
+                st.write("**Panel Wise Summary**")
+            with col2:
+                panel_filter = st.selectbox(
+                    "Filter by Panel",
+                    ["All Panels"] + list(panel_summary_df['Panel Name'].unique()),
+                    key="panel_filter"
+                )
+            with col3:
+                panel_export = st.selectbox(
+                    "Export as",
+                    ["View", "Download CSV", "Download PDF"],
+                    key="panel_export_format"
+                )
+                
+                if panel_export == "Download CSV":
+                    csv = panel_summary_df.to_csv(index=True)
+                    st.download_button(
+                        label="Download CSV",
+                        data=csv,
+                        file_name=f"panel_wise_reconciliation_summary_{datetime.now().strftime('%d%m%Y')}.csv",
+                        mime="text/csv"
+                    )
+                elif panel_export == "Download PDF":
+                    st.info("PDF export coming soon!")
+            
+            # Display filtered data
+            if panel_filter != "All Panels":
+                filtered_df = panel_summary_df[panel_summary_df['Panel Name'] == panel_filter]
+                st.dataframe(filtered_df)
+            else:
+                st.dataframe(panel_summary_df)
+        
+        with report_tab3:
+            st.subheader("INDIVIDUAL PANEL WISE DETAILED REPORT")
+            
+            # Sample data for individual panel wise detailed report
+            from report_formats import IndividualPanelWiseDetailedReport
+            
+            detailed_data = [
+                IndividualPanelWiseDetailedReport.get_detailed_row(
+                    email="user1@example.com",
+                    panel_name="Seller Panel",
+                    user_status="Active",
+                    hr_status="Active",
+                    recon_status="Matched",
+                    action_required="No Action",
+                    remarks="User status matches HR data"
+                ),
+                IndividualPanelWiseDetailedReport.get_detailed_row(
+                    email="user2@example.com",
+                    panel_name="Seller Panel",
+                    user_status="Active",
+                    hr_status="Inactive",
+                    recon_status="Mismatch",
+                    action_required="Revoke Access",
+                    remarks="User is inactive in HR but active in panel"
+                ),
+                IndividualPanelWiseDetailedReport.get_detailed_row(
+                    email="user3@example.com",
+                    panel_name="BOSS Panel",
+                    user_status="Inactive",
+                    hr_status="Active",
+                    recon_status="Mismatch",
+                    action_required="Activate Access",
+                    remarks="User is active in HR but inactive in panel"
+                )
+            ]
+            
+            detailed_df = pd.DataFrame(detailed_data)
+            detailed_df.index = range(1, len(detailed_df) + 1)
+            detailed_df.index.name = 'S.No.'
+            
+            # Add filter and export options
+            col1, col2, col3 = st.columns([2, 1, 1])
+            with col1:
+                st.write("**Detailed Report**")
+            with col2:
+                detail_filter = st.selectbox(
+                    "Filter by Panel",
+                    ["All Panels"] + list(detailed_df['Panel Name'].unique()),
+                    key="detail_filter"
+                )
+            with col3:
+                detail_export = st.selectbox(
+                    "Export as",
+                    ["View", "Download CSV", "Download PDF"],
+                    key="detail_export_format"
+                )
+                
+                if detail_export == "Download CSV":
+                    csv = detailed_df.to_csv(index=True)
+                    st.download_button(
+                        label="Download CSV",
+                        data=csv,
+                        file_name=f"individual_panel_detailed_report_{datetime.now().strftime('%d%m%Y')}.csv",
+                        mime="text/csv"
+                    )
+                elif detail_export == "Download PDF":
+                    st.info("PDF export coming soon!")
+            
+            # Display filtered data
+            if detail_filter != "All Panels":
+                filtered_detail_df = detailed_df[detailed_df['Panel Name'] == detail_filter]
+                st.dataframe(filtered_detail_df)
+            else:
+                st.dataframe(detailed_df)
+        
+        with report_tab4:
+            st.subheader("USER-WISE SUMMARY")
+            
+            # Sample data for user-wise summary
+            from report_formats import UserWiseSummary
+            
+            user_summary_data = [
+                UserWiseSummary.get_user_summary_row(
+                    email="user1@example.com",
+                    panel_name="Seller Panel",
+                    pre_status="Active",
+                    post_status="Active",
+                    action_taken="No Action",
+                    comments="Status unchanged"
+                ),
+                UserWiseSummary.get_user_summary_row(
+                    email="user2@example.com",
+                    panel_name="Seller Panel",
+                    pre_status="Active",
+                    post_status="Inactive",
+                    action_taken="Access Revoked",
+                    comments="User inactive in HR data"
+                ),
+                UserWiseSummary.get_user_summary_row(
+                    email="user3@example.com",
+                    panel_name="BOSS Panel",
+                    pre_status="Inactive",
+                    post_status="Active",
+                    action_taken="Access Activated",
+                    comments="User active in HR data"
+                )
+            ]
+            
+            user_summary_df = pd.DataFrame(user_summary_data)
+            user_summary_df.index = range(1, len(user_summary_df) + 1)
+            user_summary_df.index.name = 'S.No.'
+            
+            # Add filter, search, and export options
+            col1, col2, col3 = st.columns([2, 1, 1])
+            with col1:
+                st.write("**User Summary**")
+                # User search input
+                user_search = st.text_input("Search by User Email", "", key="user_search")
+            with col2:
+                user_filter = st.selectbox(
+                    "Filter by Status Change",
+                    ["All Changes", "No Change", "Active → Inactive", "Inactive → Active"],
+                    key="user_filter"
+                )
+            with col3:
+                user_export = st.selectbox(
+                    "Export as",
+                    ["View", "Download CSV", "Download PDF"],
+                    key="user_export_format"
+                )
+                
+                if user_export == "Download CSV":
+                    csv = user_summary_df.to_csv(index=True)
+                    st.download_button(
+                        label="Download CSV",
+                        data=csv,
+                        file_name=f"user_wise_summary_{datetime.now().strftime('%d%m%Y')}.csv",
+                        mime="text/csv"
+                    )
+                elif user_export == "Download PDF":
+                    st.info("PDF export coming soon!")
+            
+            # Apply search and filter
+            filtered_user_df = user_summary_df
+            if user_search:
+                filtered_user_df = filtered_user_df[filtered_user_df['User Email ID'].str.contains(user_search, case=False, na=False)]
+            if user_filter != "All Changes":
+                if user_filter == "No Change":
+                    filtered_user_df = filtered_user_df[filtered_user_df['Status Change'] == "No Change"]
+                elif user_filter == "Active → Inactive":
+                    filtered_user_df = filtered_user_df[filtered_user_df['Status Change'] == "Active → Inactive"]
+                elif user_filter == "Inactive → Active":
+                    filtered_user_df = filtered_user_df[filtered_user_df['Status Change'] == "Inactive → Active"]
+            st.dataframe(filtered_user_df)
 
     with tab6:
         st.header("Audit Trails")
